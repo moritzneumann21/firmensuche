@@ -25,11 +25,11 @@
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
       border-radius: 20px;
-      padding: 40px;
+      padding: 50px;
       box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
       border: 1px solid rgba(255, 255, 255, 0.18);
       width: 100%;
-      max-width: 500px;
+      max-width: 700px;
       animation: slideUp 0.8s ease-out;
     }
 
@@ -47,8 +47,8 @@
     h2 {
       color: white;
       text-align: center;
-      margin-bottom: 30px;
-      font-size: 2rem;
+      margin-bottom: 40px;
+      font-size: 2.5rem;
       font-weight: 300;
       letter-spacing: 1px;
       animation: fadeIn 1s ease-out 0.3s both;
@@ -60,7 +60,7 @@
     }
 
     .form-group {
-      margin-bottom: 25px;
+      margin-bottom: 35px;
       animation: fadeIn 1s ease-out 0.6s both;
     }
 
@@ -78,12 +78,12 @@
 
     input[type="text"] {
       width: 100%;
-      padding: 15px 20px;
+      padding: 18px 25px;
       border: none;
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.2);
       color: white;
-      font-size: 1rem;
+      font-size: 1.1rem;
       backdrop-filter: blur(5px);
       border: 1px solid rgba(255, 255, 255, 0.3);
       transition: all 0.3s ease;
@@ -103,18 +103,19 @@
 
     .submit-btn {
       width: 100%;
-      padding: 15px;
+      padding: 18px;
       background: linear-gradient(45deg, #ff6b6b, #ee5a24);
       color: white;
       border: none;
       border-radius: 10px;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
       animation: fadeIn 1s ease-out 1.2s both;
+      margin-bottom: 20px;
     }
 
     .submit-btn:hover {
@@ -210,15 +211,69 @@
       50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
     }
 
-    /* Responsive Design */
+    .info-box {
+      background: rgba(76, 175, 80, 0.2);
+      border: 1px solid rgba(76, 175, 80, 0.4);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      color: white;
+      text-align: center;
+      font-size: 1.1rem;
+      animation: slideInFromBottom 0.8s ease-out;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.5s ease;
+    }
+
+    .info-box.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .info-box a {
+      color: #4CAF50;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .info-box a:hover {
+      color: #66BB6A;
+      text-decoration: underline;
+    }
+
+    @keyframes slideInFromBottom {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .description {
+      color: rgba(255, 255, 255, 0.9);
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      animation: fadeIn 1s ease-out 0.5s both;
+    }
     @media (max-width: 600px) {
       .container {
-        padding: 30px 20px;
+        padding: 40px 25px;
         margin: 10px;
       }
       
       h2 {
-        font-size: 1.5rem;
+        font-size: 2rem;
+      }
+
+      .description {
+        font-size: 1rem;
       }
     }
   </style>
@@ -226,6 +281,9 @@
 <body>
   <div class="container">
     <h2>🔍 Firmensuche</h2>
+    <p class="description">
+      Bitte nur genaue Postleitzahlen angeben, z. B. 87600 – keine allgemeinen Angaben. Sollte sich die Tabelle innerhalb einer Minute nicht aktualisieren, ist vermutlich etwas schiefgelaufen!
+    </p>
     <form id="webhookForm">
       <div class="form-group">
         <label for="plz">📍 Postleitzahl:</label>
@@ -242,6 +300,12 @@
     </form>
     <div class="response-container" id="responseContainer">
       <div class="response" id="response"></div>
+    </div>
+    <div class="info-box" id="infoBox">
+      📊 Alle gefundenen Firmen sind hier zu finden: 
+      <a href="https://docs.google.com/spreadsheets/d/1gDjNh2NfXVcWDqCMsY1NASe0lawjHWDeNyEFSupjMEE/edit?usp=sharing" target="_blank">
+        Google Spreadsheet öffnen
+      </a>
     </div>
   </div>
 
@@ -288,6 +352,11 @@
         // Response anzeigen
         responseElement.textContent = text;
         responseContainer.classList.add("show");
+        
+        // Info Box anzeigen
+        setTimeout(() => {
+          document.getElementById("infoBox").classList.add("show");
+        }, 500);
         
         // Success Animation
         showSuccessAnimation();
