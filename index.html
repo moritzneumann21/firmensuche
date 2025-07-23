@@ -1,1 +1,359 @@
-<h1>helloworld</h1>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firmensuche-Webhook</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      width: 100%;
+      max-width: 500px;
+      animation: slideUp 0.8s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2 {
+      color: white;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: 1px;
+      animation: fadeIn 1s ease-out 0.3s both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+      animation: fadeIn 1s ease-out 0.6s both;
+    }
+
+    .form-group:last-of-type {
+      animation-delay: 0.9s;
+    }
+
+    label {
+      display: block;
+      color: white;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 1.1rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 15px 20px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 1rem;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 1s ease-out 1.2s both;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(238, 90, 36, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(-1px);
+    }
+
+    .submit-btn.loading {
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    .submit-btn .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.6);
+      transform: scale(0);
+      animation: ripple 0.6s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    .loading-spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .response-container {
+      margin-top: 30px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+    }
+
+    .response-container.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .response {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 20px;
+      color: white;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .success-animation {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(76, 175, 80, 0.9);
+      color: white;
+      padding: 20px 40px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      z-index: 1000;
+      opacity: 0;
+      animation: successPulse 2s ease-in-out;
+    }
+
+    @keyframes successPulse {
+      0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+        margin: 10px;
+      }
+      
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔍 Firmensuche</h2>
+    <form id="webhookForm">
+      <div class="form-group">
+        <label for="plz">📍 Postleitzahl:</label>
+        <input type="text" id="plz" name="plz" placeholder="z.B. 87600" required>
+      </div>
+      <div class="form-group">
+        <label for="stichworte">🏷️ Stichworte:</label>
+        <input type="text" id="stichworte" name="stichworte" placeholder="z.B. Webdesign, Marketing" required>
+      </div>
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span class="btn-text">Firmen suchen</span>
+        <div class="loading-spinner" id="loadingSpinner"></div>
+      </button>
+    </form>
+    <div class="response-container" id="responseContainer">
+      <div class="response" id="response"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("webhookForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById("submitBtn");
+      const btnText = submitBtn.querySelector(".btn-text");
+      const loadingSpinner = document.getElementById("loadingSpinner");
+      const responseContainer = document.getElementById("responseContainer");
+      const responseElement = document.getElementById("response");
+      
+      // Button Animation beim Klick
+      createRipple(e, submitBtn);
+      
+      // Loading State
+      submitBtn.classList.add("loading");
+      btnText.style.display = "none";
+      loadingSpinner.style.display = "block";
+      
+      // Response Container verstecken
+      responseContainer.classList.remove("show");
+      
+      try {
+        const plz = document.getElementById("plz").value;
+        const stichworte = document.getElementById("stichworte").value;
+        
+        const body = {
+          plz: plz,
+          stichworte: stichworte
+        };
+        
+        const res = await fetch("https://mo12341.app.n8n.cloud/webhook/firmensuche", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        });
+        
+        const text = await res.text();
+        
+        // Response anzeigen
+        responseElement.textContent = text;
+        responseContainer.classList.add("show");
+        
+        // Success Animation
+        showSuccessAnimation();
+        
+        // Auto-Reload nach 3 Sekunden
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+        
+      } catch (error) {
+        responseElement.textContent = "Fehler: " + error.message;
+        responseContainer.classList.add("show");
+        
+        // Button zurücksetzen bei Fehler
+        setTimeout(() => {
+          submitBtn.classList.remove("loading");
+          btnText.style.display = "inline";
+          loadingSpinner.style.display = "none";
+        }, 1000);
+      }
+    });
+    
+    // Ripple Effekt für Button
+    function createRipple(event, button) {
+      const circle = document.createElement("span");
+      const diameter = Math.max(button.clientWidth, button.clientHeight);
+      const radius = diameter / 2;
+      
+      const rect = button.getBoundingClientRect();
+      circle.style.width = circle.style.height = diameter + "px";
+      circle.style.left = (event.clientX - rect.left - radius) + "px";
+      circle.style.top = (event.clientY - rect.top - radius) + "px";
+      circle.classList.add("ripple");
+      
+      const ripple = button.getElementsByClassName("ripple")[0];
+      if (ripple) {
+        ripple.remove();
+      }
+      
+      button.appendChild(circle);
+    }
+    
+    // Success Animation
+    function showSuccessAnimation() {
+      const successDiv = document.createElement("div");
+      successDiv.className = "success-animation";
+      successDiv.textContent = "✅ Erfolgreich gesendet! Seite wird neu geladen...";
+      document.body.appendChild(successDiv);
+      
+      setTimeout(() => {
+        successDiv.remove();
+      }, 2000);
+    }
+    
+    // Input Animationen
+    document.querySelectorAll('input[type="text"]').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.style.transform = 'translateY(-2px)';
+      });
+      
+      input.addEventListener('blur', function() {
+        if (!this.value) {
+          this.style.transform = 'translateY(0)';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
