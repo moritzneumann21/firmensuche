@@ -216,19 +216,11 @@
       border: 1px solid rgba(76, 175, 80, 0.4);
       border-radius: 10px;
       padding: 20px;
-      margin-top: 20px;
+      margin-top: 30px;
       color: white;
       text-align: center;
       font-size: 1.1rem;
-      animation: slideInFromBottom 0.8s ease-out;
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 0.5s ease;
-    }
-
-    .info-box.show {
-      opacity: 1;
-      transform: translateY(0);
+      animation: fadeIn 1s ease-out 1.5s both;
     }
 
     .info-box a {
@@ -352,11 +344,6 @@
         // Response anzeigen
         responseElement.textContent = text;
         responseContainer.classList.add("show");
-        
-        // Info Box anzeigen
-        setTimeout(() => {
-          document.getElementById("infoBox").classList.add("show");
-        }, 500);
         
         // Success Animation
         showSuccessAnimation();
